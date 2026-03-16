@@ -253,6 +253,44 @@ const KostFinance = (() => {
     return num.toLocaleString('id-ID');
   }
 
+  // ---- User Profile & Logout ----
+  async function renderUserProfile() {
+    const userContainer = document.getElementById('sidebar-user');
+    if (!userContainer) return;
+
+    try {
+      const resp = await KostAPI.auth.getSession();
+      // BetterAuth mengembalikan { session, user }
+      if (resp && resp.user) {
+        document.getElementById('sidebar-user-name').textContent = resp.user.name;
+        document.getElementById('sidebar-user-email').textContent = resp.user.email;
+      }
+    } catch (err) {
+      console.error('Gagal mengambil sesi pengguna:', err);
+      document.getElementById('sidebar-user-name').textContent = 'Sesi Berakhir';
+      document.getElementById('sidebar-user-email').textContent = '';
+    }
+
+    const btnLogout = document.getElementById('btn-logout');
+    if (btnLogout) {
+      btnLogout.addEventListener('click', async () => {
+        const confirmLogout = await showConfirm('Keluar', 'Apakah Anda yakin ingin keluar dari aplikasi?');
+        if (!confirmLogout) return;
+
+        try {
+          btnLogout.innerHTML = '⏳';
+          btnLogout.disabled = true;
+          await KostAPI.auth.signOut();
+        } catch (err) {
+          console.error('Logout error:', err);
+        } finally {
+          KostAPI.setToken('');
+          window.location.href = 'login.html';
+        }
+      });
+    }
+  }
+
   // ---- Public API ----
   return {
     fetchCategories,
@@ -263,6 +301,7 @@ const KostFinance = (() => {
     deleteTransaction,
     getSummary,
     getChartData,
+    renderUserProfile,
     getCategories,
     getCategoryById,
     getCategoryLabel,

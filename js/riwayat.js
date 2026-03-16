@@ -17,6 +17,7 @@
 
     try {
       await KostFinance.fetchCategories();
+      await KostFinance.renderUserProfile();
       setupFilters();
       setupSearch();
       setupExport();

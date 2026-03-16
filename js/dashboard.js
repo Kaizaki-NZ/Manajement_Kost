@@ -15,6 +15,7 @@
     try {
       // Must fetch categories first for synchronous helpers (icon, label)
       await KostFinance.fetchCategories();
+      await KostFinance.renderUserProfile();
       
       renderGreeting();
       await renderSummary();

@@ -17,6 +17,7 @@
 
     try {
       await KostFinance.fetchCategories();
+      await KostFinance.renderUserProfile();
 
       // Check if editing
       const params = new URLSearchParams(window.location.search);
