@@ -1,52 +1,82 @@
 <!DOCTYPE html>
 <html lang="id">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Kost Finance — Masuk atau daftar untuk mencatat keuangan kost.">
-  <title>Kost Finance — Autentikasi</title>
-  <link rel="stylesheet" href="css/style.css">
-</head>
-<body style="display: flex; align-items: center; justify-content: center; min-height: 100vh; background: var(--bg-primary);">
-  <div class="app-container" style="max-width: 400px; padding: var(--space-xl);">
-    
-    <div style="text-align: center; margin-bottom: var(--space-xl);">
-      <h1 class="page-header__title" style="margin-top: 0;">Kost Finance</h1>
-      <p style="color: var(--text-secondary); margin-top: var(--space-sm);">Sistem Manajemen Keuangan Kost</p>
-    </div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Kost Finance — Masuk atau daftar untuk mencatat keuangan kost."
+    />
+    <title>Kost Finance — Autentikasi</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body class="auth-layout">
 
-    <!-- Login Form -->
-    <form id="auth-form" autocomplete="off">
-      <div id="register-fields" style="display: none;">
-        <div class="form-group">
-          <label class="form-label" for="input-name">Nama Lengkap</label>
-          <input type="text" id="input-name" class="form-input" placeholder="Misal: Budi Santoso">
+  <!-- Left Side: Branding (Desktop Only) -->
+  <div class="auth-branding animate-in">
+    <div class="auth-branding__content">
+      <h1 class="auth-branding__title">Manajemen Keuangan Kost Modern.</h1>
+      <p class="auth-branding__text">Didesain khusus untuk juragan kost memantau pemasukan dan pengeluaran secara real-time dari mana saja.</p>
+      
+      <div class="auth-branding__features animate-in animate-in-delay-1">
+        <div class="auth-feature">
+          <span class="auth-feature__icon">⚡</span>
+          <div class="auth-feature__desc">
+            <h3>Cepat & Responsif</h3>
+            <p>Catat transaksi dalam hitungan detik.</p>
+          </div>
+        </div>
+        <div class="auth-feature animate-in animate-in-delay-2">
+          <span class="auth-feature__icon">📊</span>
+          <div class="auth-feature__desc">
+            <h3>Laporan Otomatis</h3>
+            <p>Pantau arus kas harian tanpa ribet merekap manual.</p>
+          </div>
         </div>
       </div>
-
-      <div class="form-group">
-        <label class="form-label" for="input-email">Email</label>
-        <input type="email" id="input-email" class="form-input" placeholder="email@contoh.com" required>
-      </div>
-
-      <div class="form-group">
-        <label class="form-label" for="input-password">Kata Sandi</label>
-        <input type="password" id="input-password" class="form-input" placeholder="Minimal 8 karakter" required>
-      </div>
-
-      <button type="submit" class="btn btn--primary" id="btn-submit" style="width: 100%;">
-        Masuk
-      </button>
-
-      <p style="text-align: center; margin-top: var(--space-lg); color: var(--text-secondary); font-size: var(--font-sm);">
-        <span id="toggle-text">Belum punya akun?</span> 
-        <a href="#" id="btn-toggle-mode" style="color: var(--accent-income); font-weight: 600; text-decoration: none;">Daftar di sini</a>
-      </p>
-    </form>
-
+    </div>
   </div>
 
-  <script src="js/api.js"></script>
-  <script src="js/auth.js"></script>
-</body>
+  <!-- Right Side: Login Form -->
+  <div class="auth-container">
+    <div class="auth-card animate-in animate-in-delay-2">
+      <div class="auth-card__header">
+        <h2 class="auth-card__logo">Kost Finance</h2>
+        <p class="auth-card__subtitle">Masuk untuk mengelola properti Anda</p>
+      </div>
+
+      <!-- Login Form (IDs kept intact for auth.js) -->
+      <form id="auth-form" autocomplete="off">
+        <div id="register-fields" style="display: none;">
+          <div class="form-group">
+            <label class="form-label" for="input-name">Nama Lengkap</label>
+            <input type="text" id="input-name" class="form-input" placeholder="Misal: Budi Santoso">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="input-email">Email</label>
+          <input type="email" id="input-email" class="form-input" placeholder="email@contoh.com" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="input-password">Kata Sandi</label>
+          <input type="password" id="input-password" class="form-input" placeholder="Minimal 8 karakter" required>
+        </div>
+
+        <button type="submit" class="btn btn--primary" id="btn-submit" style="width: 100%; margin-top: var(--space-sm);">
+          Masuk
+        </button>
+
+        <p class="auth-toggle">
+          <span id="toggle-text">Belum punya akun?</span> 
+          <a href="#" id="btn-toggle-mode">Daftar di sini</a>
+        </p>
+      </form>
+    </div>
+  </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+  </body>
 </html>
