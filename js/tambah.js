@@ -8,19 +8,31 @@
   let currentType = 'income';
   let editId = null;
 
-  function init() {
-    // Check if editing
-    const params = new URLSearchParams(window.location.search);
-    editId = params.get('edit');
+  async function init() {
+    // Check Auth
+    if (!KostAPI.getToken()) {
+      window.location.href = 'login.html';
+      return;
+    }
 
-    setupTypeToggle();
-    setupAmountInput();
-    setupForm();
-    setDefaultDate();
-    loadCategories();
+    try {
+      await KostFinance.fetchCategories();
 
-    if (editId) {
-      loadEditData();
+      // Check if editing
+      const params = new URLSearchParams(window.location.search);
+      editId = params.get('edit');
+
+      setupTypeToggle();
+      setupAmountInput();
+      setupForm();
+      setDefaultDate();
+      loadCategories();
+
+      if (editId) {
+        await loadEditData();
+      }
+    } catch (err) {
+      console.error('Gagal inisialisasi tambah:', err);
     }
   }
 
@@ -56,7 +68,7 @@
   // ---- Default Date ----
   function setDefaultDate() {
     const dateInput = document.getElementById('input-date');
-    dateInput.value = KostFinance.getTodayString();
+    if(dateInput) dateInput.value = KostFinance.getTodayString();
   }
 
   // ---- Load Categories ----
@@ -69,7 +81,7 @@
     categories.forEach(cat => {
       const option = document.createElement('option');
       option.value = cat.id;
-      option.textContent = `${cat.icon} ${cat.label}`;
+      option.textContent = `${cat.ikon} ${cat.label}`;
       select.appendChild(option);
     });
 
@@ -80,42 +92,55 @@
   }
 
   // ---- Load Edit Data ----
-  function loadEditData() {
-    const tx = KostFinance.getTransactionById(editId);
-    if (!tx) {
-      KostFinance.showToast('Transaksi tidak ditemukan', 'error');
-      setTimeout(() => window.location.href = 'riwayat.html', 1000);
-      return;
+  async function loadEditData() {
+    const btnSubmit = document.getElementById('btn-submit');
+    const originalText = btnSubmit.textContent;
+    btnSubmit.textContent = 'Memuat Data...';
+    btnSubmit.disabled = true;
+
+    try {
+      const tx = await KostFinance.getTransactionById(editId);
+      if (!tx) {
+        throw new Error('Transaksi tidak ditemukan');
+      }
+
+      // Update page title
+      document.getElementById('page-title').textContent = 'Edit Transaksi';
+      btnSubmit.textContent = '💾 Simpan Perubahan';
+      document.title = 'Kost Finance — Edit Transaksi';
+
+      // Switch type
+      switchType(tx.type);
+
+      // Fill fields
+      document.getElementById('input-amount').value = tx.amount.toLocaleString('id-ID');
+      document.getElementById('input-date').value = tx.date;
+      document.getElementById('input-note').value = tx.note || '';
+
+      // Set category value
+      setTimeout(() => {
+        document.getElementById('input-category').value = tx.categoryId;
+      }, 50);
+
+      // Show delete button
+      const deleteBtn = document.getElementById('btn-delete');
+      deleteBtn.classList.remove('hidden');
+      deleteBtn.addEventListener('click', handleDelete);
+
+    } catch (err) {
+      KostFinance.showToast(err.message || 'Gagal memuat transaksi', 'error');
+      setTimeout(() => window.location.href = 'riwayat.html', 1500);
+    } finally {
+      btnSubmit.disabled = false;
     }
-
-    // Update page title
-    document.getElementById('page-title').textContent = 'Edit Transaksi';
-    document.getElementById('btn-submit').textContent = '💾 Simpan Perubahan';
-    document.title = 'Kost Finance — Edit Transaksi';
-
-    // Switch type
-    switchType(tx.type);
-
-    // Fill fields
-    document.getElementById('input-amount').value = tx.amount.toLocaleString('id-ID');
-    document.getElementById('input-date').value = tx.date;
-    document.getElementById('input-note').value = tx.note || '';
-
-    // Load categories first, then set value
-    setTimeout(() => {
-      document.getElementById('input-category').value = tx.categoryId;
-    }, 50);
-
-    // Show delete button
-    const deleteBtn = document.getElementById('btn-delete');
-    deleteBtn.classList.remove('hidden');
-    deleteBtn.addEventListener('click', handleDelete);
   }
 
   // ---- Form Submit ----
   function setupForm() {
     const form = document.getElementById('transaction-form');
-    form.addEventListener('submit', (e) => {
+    const btnSubmit = document.getElementById('btn-submit');
+
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
 
       const amount = KostFinance.parseRupiahInput(document.getElementById('input-amount').value);
@@ -137,31 +162,42 @@
         return;
       }
 
-      if (editId) {
-        // Update
-        KostFinance.updateTransaction(editId, {
-          type: currentType,
-          amount,
-          date,
-          categoryId,
-          note
-        });
-        KostFinance.showToast('Transaksi berhasil diperbarui');
-      } else {
-        // Create
-        KostFinance.addTransaction({
-          type: currentType,
-          amount,
-          date,
-          categoryId,
-          note
-        });
-        KostFinance.showToast('Transaksi berhasil ditambahkan');
-      }
+      try {
+        btnSubmit.disabled = true;
+        const originalText = btnSubmit.innerHTML;
+        btnSubmit.innerHTML = '⏳ Menyimpan...';
 
-      setTimeout(() => {
-        window.location.href = 'index.html';
-      }, 800);
+        if (editId) {
+          // Update
+          await KostFinance.updateTransaction(editId, {
+            type: currentType,
+            amount,
+            date,
+            categoryId,
+            note
+          });
+          KostFinance.showToast('Transaksi berhasil diperbarui');
+        } else {
+          // Create
+          await KostFinance.addTransaction({
+            type: currentType,
+            amount,
+            date,
+            categoryId,
+            note
+          });
+          KostFinance.showToast('Transaksi berhasil ditambahkan');
+        }
+
+        setTimeout(() => {
+          window.location.href = 'index.html';
+        }, 800);
+
+      } catch (err) {
+        KostFinance.showToast(err.message || 'Gagal menyimpan transaksi', 'error');
+        btnSubmit.disabled = false;
+        btnSubmit.innerHTML = editId ? '💾 Simpan Perubahan' : '💾 Simpan Transaksi';
+      }
     });
   }
 
@@ -173,15 +209,29 @@
     );
 
     if (confirmed) {
-      KostFinance.deleteTransaction(editId);
-      KostFinance.showToast('Transaksi berhasil dihapus');
-      setTimeout(() => {
-        window.location.href = 'index.html';
-      }, 800);
+      const btnDelete = document.getElementById('btn-delete');
+      const btnSubmit = document.getElementById('btn-submit');
+      
+      try {
+        btnDelete.disabled = true;
+        btnSubmit.disabled = true;
+        btnDelete.innerHTML = '⏳ Menghapus...';
+
+        await KostFinance.deleteTransaction(editId);
+        KostFinance.showToast('Transaksi berhasil dihapus');
+        setTimeout(() => {
+          window.location.href = 'index.html';
+        }, 800);
+      } catch (err) {
+        KostFinance.showToast(err.message || 'Gagal menghapus transaksi', 'error');
+        btnDelete.disabled = false;
+        btnSubmit.disabled = false;
+        btnDelete.innerHTML = '🗑️ Hapus Transaksi';
+      }
     }
   }
 
-  // Init
+  // Init on DOM ready
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {

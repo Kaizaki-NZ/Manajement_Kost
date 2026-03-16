@@ -5,11 +5,24 @@
 (function () {
   'use strict';
 
-  function init() {
-    renderGreeting();
-    renderSummary();
-    renderChart();
-    renderRecentTransactions();
+  async function init() {
+    // Check Auth
+    if (!KostAPI.getToken()) {
+      window.location.href = 'login.html';
+      return;
+    }
+
+    try {
+      // Must fetch categories first for synchronous helpers (icon, label)
+      await KostFinance.fetchCategories();
+      
+      renderGreeting();
+      await renderSummary();
+      await renderChart();
+      await renderRecentTransactions();
+    } catch (err) {
+      console.error('Gagal inisialisasi dashboard:', err);
+    }
   }
 
   function renderGreeting() {
@@ -17,8 +30,8 @@
     if (el) el.textContent = KostFinance.getGreetingDate();
   }
 
-  function renderSummary() {
-    const summary = KostFinance.getSummary();
+  async function renderSummary() {
+    const summary = await KostFinance.getSummary();
 
     const saldoEl = document.getElementById('saldo-amount');
     const incomeEl = document.getElementById('income-amount');
@@ -29,16 +42,18 @@
     if (expenseEl) expenseEl.textContent = KostFinance.formatRupiah(summary.totalExpense);
   }
 
-  function renderChart() {
-    const data = KostFinance.getChartData(7);
+  async function renderChart() {
+    const data = await KostFinance.getChartData(7);
     KostChart.render('cashflow-chart', data);
   }
 
-  function renderRecentTransactions() {
+  async function renderRecentTransactions() {
     const container = document.getElementById('recent-transactions');
     if (!container) return;
 
-    const transactions = KostFinance.getTransactions({ sortDesc: true });
+    container.innerHTML = '<p style="text-align:center; padding: 20px;">Memuat transaksi...</p>';
+
+    const transactions = await KostFinance.getTransactions({ sortDesc: true });
     const recent = transactions.slice(0, 5);
 
     if (recent.length === 0) {

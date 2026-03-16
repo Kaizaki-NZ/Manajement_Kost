@@ -8,29 +8,47 @@
   let currentFilter = 'all';
   let searchQuery = '';
 
-  function init() {
-    setupFilters();
-    setupSearch();
-    setupExport();
-    renderTransactions();
+  async function init() {
+    // Check Auth
+    if (!KostAPI.getToken()) {
+      window.location.href = 'login.html';
+      return;
+    }
+
+    try {
+      await KostFinance.fetchCategories();
+      setupFilters();
+      setupSearch();
+      setupExport();
+      await renderTransactions();
+    } catch (err) {
+      console.error('Gagal inisialisasi riwayat:', err);
+    }
   }
 
   // ---- Export CSV ----
   function setupExport() {
     const btn = document.getElementById('btn-export');
     if (!btn) return;
-    btn.addEventListener('click', () => {
+    
+    // Hapus listener lama jika ada (mencegah double trigger)
+    const newBtn = btn.cloneNode(true);
+    btn.parentNode.replaceChild(newBtn, btn);
+
+    newBtn.addEventListener('click', async () => {
       const opts = { sortDesc: true };
       if (currentFilter !== 'all') opts.type = currentFilter;
       if (searchQuery) opts.search = searchQuery;
-      KostFinance.exportToCSV(opts);
+      await KostFinance.exportToCSV(opts);
     });
   }
 
   // ---- Filters ----
   function setupFilters() {
     const filterBar = document.getElementById('filter-bar');
-    filterBar.addEventListener('click', (e) => {
+    if(!filterBar) return;
+    
+    filterBar.addEventListener('click', async (e) => {
       const chip = e.target.closest('.filter-chip');
       if (!chip) return;
 
@@ -39,28 +57,31 @@
       chip.classList.add('active');
 
       currentFilter = chip.dataset.filter;
-      renderTransactions();
+      await renderTransactions();
     });
   }
 
   // ---- Search ----
   function setupSearch() {
     const input = document.getElementById('search-input');
+    if(!input) return;
     let debounceTimer;
 
     input.addEventListener('input', () => {
       clearTimeout(debounceTimer);
-      debounceTimer = setTimeout(() => {
+      debounceTimer = setTimeout(async () => {
         searchQuery = input.value.trim();
-        renderTransactions();
-      }, 250);
+        await renderTransactions();
+      }, 500); // 500ms debounce for API calls
     });
   }
 
   // ---- Render ----
-  function renderTransactions() {
+  async function renderTransactions() {
     const container = document.getElementById('transaction-list');
     if (!container) return;
+
+    container.innerHTML = '<p style="text-align:center; padding: 20px;">Memuat transaksi...</p>';
 
     const opts = { sortDesc: true };
     if (currentFilter !== 'all') {
@@ -70,14 +91,14 @@
       opts.search = searchQuery;
     }
 
-    const transactions = KostFinance.getTransactions(opts);
+    const transactions = await KostFinance.getTransactions(opts);
 
     if (transactions.length === 0) {
       container.innerHTML = `
         <div class="empty-state">
           <div class="empty-state__icon">📭</div>
           <p class="empty-state__text">
-            ${searchQuery ? 'Tidak ada transaksi yang cocok.' : 'Belum ada transaksi.'}
+            ${searchQuery || currentFilter !== 'all' ? 'Tidak ada transaksi yang cocok dengan filter.' : 'Belum ada transaksi.'}
           </p>
         </div>
       `;
@@ -130,7 +151,7 @@
     container.innerHTML = html;
   }
 
-  // Init
+  // Init on DOM ready
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {
