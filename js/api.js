@@ -151,6 +151,8 @@ const KostAPI = (() => {
     transaksi,
     kategori,
     dasbor,
-    requireAuth
+    requireAuth,
+    getToken,
+    setToken
   };
 })();
