@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Kost Finance — Dashboard keuangan untuk manajemen kost. Pantau saldo, pemasukan, dan pengeluaran secara real-time.">
+  <title>Kost Finance — Dashboard</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app-container">
+
+    <!-- Sidebar (Desktop) -->
+    <aside class="sidebar">
+      <div class="sidebar__logo">Kost Finance</div>
+      <nav class="sidebar__nav">
+        <a href="index.html" class="sidebar__item active" id="side-dashboard">
+          <span class="sidebar__item-icon">🏠</span>
+          Dashboard
+        </a>
+        <a href="tambah.html" class="sidebar__item" id="side-tambah">
+          <span class="sidebar__item-icon">➕</span>
+          Tambah Transaksi
+        </a>
+        <a href="riwayat.html" class="sidebar__item" id="side-riwayat">
+          <span class="sidebar__item-icon">📋</span>
+          Riwayat
+        </a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="page-content">
+
+      <!-- Header -->
+      <header class="page-header animate-in">
+        <div>
+          <p class="page-header__greeting" id="greeting-date"></p>
+          <h1 class="page-header__title" style="margin-top: 0;">Halo, Pemilik Kost 👋</h1>
+        </div>
+      </header>
+
+      <!-- Saldo Card -->
+      <div class="saldo-card animate-in animate-in-delay-1" id="saldo-card">
+        <p class="saldo-card__label">✦ Total Saldo</p>
+        <p class="saldo-card__amount" id="saldo-amount">Rp 0</p>
+      </div>
+
+      <!-- Summary Cards -->
+      <div class="summary-row animate-in animate-in-delay-2">
+        <div class="summary-card summary-card--income">
+          <div class="summary-card__icon">↑</div>
+          <p class="summary-card__label">Pemasukan</p>
+          <p class="summary-card__amount" id="income-amount">Rp 0</p>
+        </div>
+        <div class="summary-card summary-card--expense">
+          <div class="summary-card__icon">↓</div>
+          <p class="summary-card__label">Pengeluaran</p>
+          <p class="summary-card__amount" id="expense-amount">Rp 0</p>
+        </div>
+      </div>
+
+      <!-- Chart -->
+      <div class="chart-container animate-in animate-in-delay-3">
+        <div class="chart-card">
+          <p class="chart-card__title">📈 Grafik Arus Kas (7 Hari)</p>
+          <canvas id="cashflow-chart"></canvas>
+          <div class="chart-legend">
+            <span class="chart-legend__item">
+              <span class="chart-legend__dot chart-legend__dot--income"></span>
+              Pemasukan
+            </span>
+            <span class="chart-legend__item">
+              <span class="chart-legend__dot chart-legend__dot--expense"></span>
+              Pengeluaran
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Transactions -->
+      <div class="animate-in animate-in-delay-4">
+        <div class="section-header">
+          <h2 class="section-header__title">Transaksi Terakhir</h2>
+          <a href="riwayat.html" class="section-header__link">Lihat Semua →</a>
+        </div>
+        <div class="transaction-list" id="recent-transactions">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+    </main>
+
+    <!-- Bottom Nav (Mobile) -->
+    <nav class="bottom-nav">
+      <a href="index.html" class="nav-item active" id="nav-dashboard">
+        <span class="nav-item__icon">🏠</span>
+        <span class="nav-item__label">Beranda</span>
+      </a>
+      <a href="tambah.html" class="nav-item nav-item--add" id="nav-tambah">
+        <span class="nav-item__icon">+</span>
+        <span class="nav-item__label">Tambah</span>
+      </a>
+      <a href="riwayat.html" class="nav-item" id="nav-riwayat">
+        <span class="nav-item__icon">📋</span>
+        <span class="nav-item__label">Riwayat</span>
+      </a>
+    </nav>
+
+  </div>
+
+  <script src="js/app.js"></script>
+  <script src="js/chart.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>
