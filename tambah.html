@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Kost Finance — Tambah atau edit transaksi keuangan kost.">
+  <title>Kost Finance — Tambah Transaksi</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app-container">
+
+    <!-- Sidebar (Desktop) -->
+    <aside class="sidebar">
+      <div class="sidebar__logo">Kost Finance</div>
+      <nav class="sidebar__nav">
+        <a href="index.html" class="sidebar__item" id="side-dashboard">
+          <span class="sidebar__item-icon">🏠</span>
+          Dashboard
+        </a>
+        <a href="tambah.html" class="sidebar__item active" id="side-tambah">
+          <span class="sidebar__item-icon">➕</span>
+          Tambah Transaksi
+        </a>
+        <a href="riwayat.html" class="sidebar__item" id="side-riwayat">
+          <span class="sidebar__item-icon">📋</span>
+          Riwayat
+        </a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="page-content">
+
+      <!-- Header -->
+      <header class="page-header animate-in">
+        <div>
+          <a href="index.html" class="page-header__back">← Kembali</a>
+          <h1 class="page-header__title" id="page-title" style="margin-top: 0;">Tambah Transaksi</h1>
+        </div>
+      </header>
+
+      <!-- Form -->
+      <form id="transaction-form" autocomplete="off">
+
+        <!-- Type Toggle -->
+        <div class="type-toggle animate-in animate-in-delay-1" id="type-toggle">
+          <button type="button" class="type-toggle__btn active--income" data-type="income" id="btn-income">
+            ↑ Pemasukan
+          </button>
+          <button type="button" class="type-toggle__btn" data-type="expense" id="btn-expense">
+            ↓ Pengeluaran
+          </button>
+        </div>
+
+        <!-- Nominal -->
+        <div class="form-group animate-in animate-in-delay-2">
+          <label class="form-label" for="input-amount">Nominal</label>
+          <div style="position:relative;">
+            <span style="position:absolute; left:16px; top:50%; transform:translateY(-50%); color:var(--text-muted); font-size:1.1rem; font-weight:600;">Rp</span>
+            <input
+              type="text"
+              id="input-amount"
+              class="form-input form-input--nominal"
+              placeholder="0"
+              inputmode="numeric"
+              style="padding-left:48px;"
+              required
+            >
+          </div>
+        </div>
+
+        <!-- Date -->
+        <div class="form-group animate-in animate-in-delay-2">
+          <label class="form-label" for="input-date">Tanggal</label>
+          <input
+            type="date"
+            id="input-date"
+            class="form-input"
+            required
+          >
+        </div>
+
+        <!-- Category -->
+        <div class="form-group animate-in animate-in-delay-3">
+          <label class="form-label" for="input-category">Kategori</label>
+          <select id="input-category" class="form-input" required>
+            <option value="">Pilih kategori...</option>
+          </select>
+        </div>
+
+        <!-- Note -->
+        <div class="form-group animate-in animate-in-delay-3">
+          <label class="form-label" for="input-note">Catatan</label>
+          <textarea
+            id="input-note"
+            class="form-input"
+            placeholder="Contoh: Sewa Unit 04 lunas Maret 2026"
+            rows="3"
+          ></textarea>
+        </div>
+
+        <!-- Submit -->
+        <button type="submit" class="btn btn--primary animate-in animate-in-delay-4" id="btn-submit">
+          💾 Simpan Transaksi
+        </button>
+
+        <!-- Delete (edit mode only) -->
+        <button type="button" class="btn btn--danger hidden mt-md" id="btn-delete" style="width:100%; padding:var(--space-md);">
+          🗑️ Hapus Transaksi
+        </button>
+
+      </form>
+
+    </main>
+
+    <!-- Bottom Nav (Mobile) -->
+    <nav class="bottom-nav">
+      <a href="index.html" class="nav-item" id="nav-dashboard">
+        <span class="nav-item__icon">🏠</span>
+        <span class="nav-item__label">Beranda</span>
+      </a>
+      <a href="tambah.html" class="nav-item nav-item--add active" id="nav-tambah">
+        <span class="nav-item__icon">+</span>
+        <span class="nav-item__label">Tambah</span>
+      </a>
+      <a href="riwayat.html" class="nav-item" id="nav-riwayat">
+        <span class="nav-item__icon">📋</span>
+        <span class="nav-item__label">Riwayat</span>
+      </a>
+    </nav>
+
+  </div>
+
+  <script src="js/app.js"></script>
+  <script src="js/tambah.js"></script>
+</body>
+</html>
